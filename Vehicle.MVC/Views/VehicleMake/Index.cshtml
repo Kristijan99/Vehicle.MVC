@@ -1,0 +1,77 @@
+﻿@model IPagedList<Vehicle.MVC.Models.VehicleMakeView>
+@using PagedList;
+@using PagedList.Mvc;
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+
+@{
+    ViewBag.Title = "Index";
+}
+<link rel="stylesheet" type="text/css" href="~/Main.css">
+
+<h2>Vehicle Makes</h2>
+<br />
+<div>
+    <div class="row-no-gutters">
+        <div class="col-xs-1 pull-left">
+            <button type="button" class="btn btn-primary" onclick='window.location = "@Url.Action("Create", "VehicleMake")";'>Create</button>
+        </div>
+        @using (Html.BeginForm("Index", "VehicleMake"))
+        {
+            <div class="pull-right">
+                <input type="submit" value="Search" class="btn btn-default" />
+            </div>
+            <div class="col-xs-3 pull-right">
+                @Html.TextBox("search", null, new { @class = "form-control" ,  @placeholder="Searching by Make name & Abrv"})
+            </div>
+            <br />
+        }
+    </div>
+</div>
+<br />
+<br />
+<table class="table table-bordered table-hover">
+    <tr>
+        <th>
+            @Html.ActionLink("Make name", "Index", new { sort = ViewBag.name, search = ViewBag.search })
+        </th>
+        <th>
+            Model name
+        </th>
+        <th>
+            @Html.ActionLink("Abbreviation", "Index", new { sort = ViewBag.abrv, search = ViewBag.search })
+        </th>
+    </tr>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td width="35%">
+                @Html.DisplayFor(modelItem => item.Name)
+                <div class="btn-group pull-right" role="group">
+                    @if ((item.VehicleModels).Count < 1)
+                    {
+                        <button type="button" class="btn btn-danger btn-xs"
+                                onclick='window.location = "@Url.Action("Delete", "VehicleMake", new { ID = item.Id })";'>
+                            Delete
+                        </button>
+                    }
+                    <button type="button" class="btn btn-success btn-xs"
+                            onclick='window.location = "@Url.Action("Edit", "VehicleMake", new { ID = item.Id })";'>
+                        Edit
+                    </button>
+                </div>
+            </td>
+            <td width="35%">
+                @foreach (var modelsInMaker in item.VehicleModels)
+                {
+                    <p>
+                        @Html.DisplayFor(modelItem => modelsInMaker.Name)
+                    </p>
+                }
+            </td>
+            <td width="30%">
+                @Html.DisplayFor(modelItem => item.Abrv)
+            </td>
+        </tr>
+    }
+</table>
+@Html.PagedListPager(Model, page => Url.Action("Index", new { page, search = ViewBag.search, sort = ViewBag.sort, direction = ViewBag.direction }))
